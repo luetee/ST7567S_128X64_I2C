@@ -93,7 +93,7 @@ void lcd_st7567s::Init(){
  * Used to test screen pixels.
 *******************************************/
 void lcd_st7567s::testPixel(int t){
-  for(int x=0; x<9; x++){
+  for(int x=0; x<8; x++){
     WriteByte_command(0xb0 + x);  //y, page address y=1-0-1-1-y3-y2-y1-y0, 1-page with 8-rows
 
     /*******automatically increased by one******/
@@ -105,7 +105,7 @@ void lcd_st7567s::testPixel(int t){
       delay(t);
       }  
   }
-  for(int x=0; x<9; x++){
+  for(int x=0; x<8; x++){
     WriteByte_command(0xb0 + x);
     WriteByte_command(0x00);
     WriteByte_command(0x10);
@@ -213,7 +213,7 @@ void lcd_st7567s::ClearPixel(int x,int y){
  * screen size: 128*32 dot
 *******************************************/
 void lcd_st7567s::Clear(){
-  for(int x=0; x<9; x++){
+  for(int x=0; x<8; x++){
     WriteByte_command(0xb0 + x);   //y, page address y=1-0-1-1-y3-y2-y1-y0, 1-page with 8-rows
     
     /*******automatically increased by one******/
