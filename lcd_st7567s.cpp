@@ -82,7 +82,7 @@ void lcd_st7567s::Init(){
     WriteByte_command(0x2C);    //Internal Power Supply Control Mode
     WriteByte_command(0x2E);
     WriteByte_command(0x2F);
-    Clear();                        //initalize DDRAM
+    Clear(false);                        //initalize DDRAM
 
     WriteByte_command(0xAF);    
     WriteByte_command(0x40);
@@ -203,7 +203,8 @@ void lcd_st7567s::ClearPixel(int x,int y){
     }
   }
   //Serial.println(dat);             // print the data
-  dat = (dat & (0xfe<<(y%8)));
+  //dat = (dat & (0xfe<<(y%8)));
+  dat &= ~(1<<(y%8));
   WriteByte_dat(dat);                //row=bit0--bit7
   WriteByte_command(END);            //end Read-modify-Write 
 }
@@ -212,7 +213,7 @@ void lcd_st7567s::ClearPixel(int x,int y){
  * clear screen, all pixel off.
  * screen size: 128*32 dot
 *******************************************/
-void lcd_st7567s::Clear(){
+void lcd_st7567s::Clear(bool invcolor){
   for(int x=0; x<8; x++){
     WriteByte_command(0xb0 + x);   //y, page address y=1-0-1-1-y3-y2-y1-y0, 1-page with 8-rows
     
@@ -221,8 +222,13 @@ void lcd_st7567s::Clear(){
     WriteByte_command(0x00);       //x, column address x=0-0-0-0-0-x3-x2-x1-x0
     
     for(int i=0; i<128; i++){
-      WriteByte_dat(0x00);         //row=bit0--bit7
-      }  
+      if (invcolor) {
+        WriteByte_dat(0xff);         //row=bit0--bit7
+      }
+      else {
+        WriteByte_dat(0x00);         //row=bit0--bit7
+      }
+    }  
   }
 }
 ///////////////////reserve///////////////////
@@ -381,3 +387,173 @@ void lcd_st7567s::Display(char *str){
     }  
   }
 }
+
+void lcd_st7567s::DrawLine(int x1, int y1, int x2, int y2, bool invcolor) {
+
+  int tmp;
+  int x,y;
+  int dx, dy;
+  int err;
+  int ystep;
+
+  int swapxy = 0;
+
+  if ( x1 > x2 ) dx = x1-x2; else dx = x2-x1;
+  if ( y1 > y2 ) dy = y1-y2; else dy = y2-y1;
+
+  if ( dy > dx ) 
+  {
+    swapxy = 1;
+    tmp = dx; dx =dy; dy = tmp;
+    tmp = x1; x1 =y1; y1 = tmp;
+    tmp = x2; x2 =y2; y2 = tmp;
+  }
+  if ( x1 > x2 ) 
+  {
+    tmp = x1; x1 =x2; x2 = tmp;
+    tmp = y1; y1 =y2; y2 = tmp;
+  }
+  err = dx >> 1;
+  if ( y2 > y1 ) ystep = 1; else ystep = -1;
+  y = y1;
+
+  for( x = x1; x <= x2; x++ )
+  {
+    if ( swapxy == 0 )
+      if (invcolor) {
+        ClearPixel(x, y);
+      }
+      else {
+        DisplayPixel(x, y);
+      }
+    else 
+      if (invcolor) {
+        ClearPixel(y, x);
+      }
+      else {
+        DisplayPixel(y, x); 
+      }
+    err -= dy;
+    if ( err < 0 ) 
+    {
+      y += ystep;
+      err += dx;
+    }
+  }  
+}
+/*==============================================*/
+/* Circle */
+void lcd_st7567s::draw_circle_section(int x, int y, int x0, int y0, int option, bool invcolor, bool solid)
+{
+    /* upper right */
+    if ( option & DRAW_UPPER_RIGHT )
+    {
+      if (solid) {
+        DrawLine(x0 + x, y0 - y, x0, y0 - y, invcolor);
+        DrawLine(x0 + y, y0 - x, x0, y0 - x, invcolor);
+      }
+      else {
+        if (invcolor) {
+          ClearPixel(x0 + x, y0 - y);
+          ClearPixel(x0 + y, y0 - x);        
+        }
+        else {
+          DisplayPixel(x0 + x, y0 - y);
+          DisplayPixel(x0 + y, y0 - x);
+        }        
+      }
+    }
+    
+    /* upper left */
+    if ( option & DRAW_UPPER_LEFT )
+    {
+      if (solid) {
+        DrawLine(x0 - x, y0 - y, x0, y0 - y, invcolor);
+        DrawLine(x0 - y, y0 - x, x0, y0 - x, invcolor);
+      }
+      else {
+        if (invcolor) {
+          ClearPixel(x0 - x, y0 - y);
+          ClearPixel(x0 - y, y0 - x);
+        }
+        else {
+          DisplayPixel(x0 - x, y0 - y);
+          DisplayPixel(x0 - y, y0 - x);
+        }
+      }
+    }
+    
+    /* lower right */
+    if ( option & DRAW_LOWER_RIGHT )
+    {
+      if (solid) {
+        DrawLine(x0 + x, y0 + y, x0, y0 + y, invcolor);
+        DrawLine(x0 + y, y0 + x, x0, y0 + x, invcolor);
+      }
+      else {
+        if (invcolor) {
+          ClearPixel(x0 + x, y0 + y);
+          ClearPixel(x0 + y, y0 + x);
+        }
+        else {
+          DisplayPixel(x0 + x, y0 + y);
+          DisplayPixel(x0 + y, y0 + x);
+        }
+      }
+    }
+    
+    /* lower left */
+    if ( option & DRAW_LOWER_LEFT )
+    {
+      if (solid) {
+        DrawLine(x0 - x, y0 + y, x0, y0 + y, invcolor);
+        DrawLine(x0 - y, y0 + x, x0, y0 + x, invcolor);
+      }
+      else {
+        if (invcolor) {
+          ClearPixel(x0 - x, y0 + y);
+          ClearPixel(x0 - y, y0 + x);
+        }
+        else {
+          DisplayPixel(x0 - x, y0 + y);
+          DisplayPixel(x0 - y, y0 + x);
+        }
+      }
+    }
+}
+
+void lcd_st7567s::draw_circle(int x0, int y0, int rad, int option, bool invcolor, bool solid)
+{
+    int f;
+    int ddF_x;
+    int ddF_y;
+    int x;
+    int y;
+
+    f = 1;
+    f -= rad;
+    ddF_x = 1;
+    ddF_y = 0;
+    ddF_y -= rad;
+    ddF_y *= 2;
+    x = 0;
+    y = rad;
+
+    draw_circle_section(x, y, x0, y0, option, invcolor, solid);
+    
+    while ( x < y )
+    {
+      if (f >= 0) 
+      {
+        y--;
+        ddF_y += 2;
+        f += ddF_y;
+      }
+      x++;
+      ddF_x += 2;
+      f += ddF_x;
+
+      draw_circle_section(x, y, x0, y0, option, invcolor, solid);    
+    }
+}
+/*==============================================*/

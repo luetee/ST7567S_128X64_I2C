@@ -16,8 +16,11 @@
 
 #include"lcd_st7567s.h"
 
+
 //create an lcd object.
 lcd_st7567s Lcd;
+
+
 
 /////////////////////////////////////////////////////////
 void setup() {
@@ -40,6 +43,14 @@ void loop() {
   delay(5);
   }
 
+  Lcd.Clear(true);
+  for(int a=0; a<64; a++){
+  Lcd.ClearPixel(a,a);                //Does not display a pixel. X=0-31, Y=0-127
+  delay(5);
+  }
+  delay(5000);
+
+  Lcd.Clear(false);
   for(int a=0; a<128; a++){
   Lcd.DisplayPixel(a,0);              //display one pixel. X=0-31, Y=0-127
   Lcd.DisplayPixel(a,63);              //display one pixel. X=0-31, Y=0-127
@@ -49,7 +60,31 @@ void loop() {
   Lcd.DisplayPixel(127,a);              //display one pixel. X=0-31, Y=0-127
   Lcd.DisplayPixel(4,a);
   }
-  delay(1500);
+  Lcd.DrawLine(5, 5, 125, 60, false);
+  Lcd.DrawLine(125, 5, 5, 60, false);
+  Lcd.DrawLine(53, 31, 73, 31, false);
+  Lcd.DrawLine(63, 20, 63, 40, false);
+
+  Lcd.draw_circle(20, 30, 10, DRAW_ALL, false, false);
+  Lcd.draw_circle(20, 30, 15, DRAW_ALL, false, false);
+
+  Lcd.draw_circle(105, 30, 15, DRAW_ALL, false, true);
+
+  delay(5000);
+
+  Lcd.Clear(false);
+  Lcd.DrawLine(53, 31, 73, 31, false);
+  Lcd.DrawLine(63, 20, 63, 40, false);
+  Lcd.draw_circle(90, 30, 10, DRAW_ALL, false, false);
+  Lcd.draw_circle(30, 30, 10, DRAW_ALL, false, true);
+  delay(5000);
+
+  Lcd.Clear(true);
+  Lcd.DrawLine(53, 31, 73, 31, true);
+  Lcd.DrawLine(63, 20, 63, 40, true);
+  Lcd.draw_circle(90, 30, 10, DRAW_ALL, true, false);
+  Lcd.draw_circle(30, 30, 10, DRAW_ALL, true, true);
+  delay(5000);
 
 /**/  
   Lcd.Cursor(7, 0);                    //Character display position. y=0-3, x=0-17
@@ -68,10 +103,10 @@ void loop() {
   Lcd.Display("%^&(){}:;'|?,.~\\[]");
   Lcd.Cursor(0, 7);
   Lcd.Display("ABCDEFGHIJKLMNOPQR");
-  delay(1500);
-  Lcd.Clear();                        //All pixels turn off.
+  delay(5000);
+  Lcd.Clear(false);                        //All pixels turn off.
   
   Lcd.DisplayPicture();               //Displays the image data for the picture.c file
-  delay(1500);
+  delay(5000);
 
 }

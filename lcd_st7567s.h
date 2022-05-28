@@ -19,6 +19,12 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#define DRAW_UPPER_RIGHT 0x01
+#define DRAW_UPPER_LEFT  0x02
+#define DRAW_LOWER_LEFT 0x04
+#define DRAW_LOWER_RIGHT  0x08
+#define DRAW_ALL (DRAW_UPPER_RIGHT|DRAW_UPPER_LEFT|DRAW_LOWER_RIGHT|DRAW_LOWER_LEFT)
+
 class lcd_st7567s{
   public:
     // LCD is driven by ST7567A IC.
@@ -75,12 +81,18 @@ class lcd_st7567s{
     int  ReadByte_dat(int col, int page); //read one byte RAM data to MCU. col=0-127, page=0-3
     void DisplayPixel(int x,int y);       //display one pixel. X=0-31, Y=0-127
     void ClearPixel(int x,int y);         //Does not display a pixel. X=0-31, Y=0-127 
-    void Clear();                         //RAM write '0', all pixels turn off. 
+    void Clear(bool invcolor);          // false = RAM write '0', all pixels turn off. 
     void FontSize(int num);               //reserve
     void Cursor(int x, int y);             //Character display position. x=0-17, y=0-3
     void DisplayPicture();                //display picture.
     void WriteFont(int num);              //Writes the data from the font.c file to RAM.
     void Display(char *str);              //4 lines of 18 characters each.
+    
+    // import from U8G2 
+    // https://github.com/olikraus/u8g2
+    void DrawLine(int x1, int y1, int x2, int y2, bool invcolor);
+    void draw_circle_section(int x, int y, int x0, int y0, int option, bool invcolor, bool solid);
+    void draw_circle(int x0, int y0, int rad, int option, bool invcolor, bool solid);
   private:
     int addr = 0x3f;  //Address of LCD device.
     int cursor[2]={0,0};
