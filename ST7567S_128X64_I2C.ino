@@ -35,29 +35,29 @@ void loop() {
   Lcd.testPixel(2);                   //use to test LCD screen. Parameter is velocity.
   
   for(int a=0; a<64; a++){
-  Lcd.DisplayPixel(a,a);              //display one pixel. X=0-31, Y=0-127
+  Lcd.DisplayPixel(a,a);              //display one pixel. X=0-127, Y=0-63
   delay(5);
   }
   for(int a=0; a<64; a++){
-  Lcd.ClearPixel(a,a);                //Does not display a pixel. X=0-31, Y=0-127
+  Lcd.ClearPixel(a,a);                //Does not display a pixel. X=0-127, Y=0-63
   delay(5);
   }
 
   Lcd.Clear(true);
   for(int a=0; a<64; a++){
-  Lcd.ClearPixel(a,a);                //Does not display a pixel. X=0-31, Y=0-127
+  Lcd.ClearPixel(a,a);                //Does not display a pixel. X=0-127, Y=0-63
   delay(5);
   }
   delay(5000);
 
   Lcd.Clear(false);
   for(int a=0; a<128; a++){
-  Lcd.DisplayPixel(a,0);              //display one pixel. X=0-31, Y=0-127
-  Lcd.DisplayPixel(a,63);              //display one pixel. X=0-31, Y=0-127
+  Lcd.DisplayPixel(a,0);              //display one pixel. X=0-127, Y=0-63
+  Lcd.DisplayPixel(a,63);              //display one pixel. X=0-127, Y=0-63
   }
   for(int a=0; a<64; a++){
-  Lcd.DisplayPixel(0, a);              //display one pixel. X=0-31, Y=0-127
-  Lcd.DisplayPixel(127,a);              //display one pixel. X=0-31, Y=0-127
+  Lcd.DisplayPixel(0, a);              //display one pixel. X=0-127, Y=0-63
+  Lcd.DisplayPixel(127,a);              //display one pixel. X=0-127, Y=0-63
   Lcd.DisplayPixel(4,a);
   }
   Lcd.DrawLine(5, 5, 125, 60, false);
